@@ -1,8 +1,7 @@
 'use client'
 
-import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
 import { Button } from '@/components/ui/Button'
 import { 
   Package, 
@@ -16,6 +15,7 @@ import {
   Trash2,
   Eye
 } from 'lucide-react'
+// Demo authentication - no Firebase needed
 
 // Mock data - in real app, this would come from your database
 const stats = {
@@ -41,18 +41,48 @@ const recentProducts = [
 ]
 
 export default function AdminDashboard() {
-  const { data: session, status } = useSession()
+  const [user, setUser] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
+  const [products, setProducts] = useState<any[]>([])
+  const [orders, setOrders] = useState<any[]>([])
   const router = useRouter()
 
   useEffect(() => {
-    if (status === 'loading') return
-
-    if (!session || session.user?.role !== 'ADMIN') {
+    // Check demo authentication
+    const isLoggedIn = localStorage.getItem('adminLoggedIn')
+    const adminEmail = localStorage.getItem('adminEmail')
+    
+    if (isLoggedIn === 'true' && adminEmail) {
+      setUser({ email: adminEmail })
+      loadData()
+    } else {
       router.push('/admin/login')
     }
-  }, [session, status, router])
+    setLoading(false)
+  }, [router])
 
-  if (status === 'loading') {
+  const loadData = async () => {
+    try {
+      // Use mock data for demo
+      setProducts(recentProducts)
+      setOrders(recentOrders)
+    } catch (error) {
+      console.error('Error loading data:', error)
+    }
+  }
+
+  const handleSignOut = async () => {
+    try {
+      // Clear demo authentication
+      localStorage.removeItem('adminLoggedIn')
+      localStorage.removeItem('adminEmail')
+      router.push('/admin/login')
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
+  }
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -63,7 +93,7 @@ export default function AdminDashboard() {
     )
   }
 
-  if (!session || session.user?.role !== 'ADMIN') {
+  if (!user) {
     return null
   }
 
@@ -75,7 +105,7 @@ export default function AdminDashboard() {
           <div className="flex justify-between items-center py-6">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {session.user?.name}</p>
+              <p className="text-gray-600">Welcome back, {user.email}</p>
             </div>
             <div className="flex items-center space-x-4">
               <Button variant="outline" size="sm">
@@ -99,7 +129,7 @@ export default function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Products</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalProducts}</p>
+                <p className="text-2xl font-bold text-gray-900">{products.length}</p>
               </div>
             </div>
           </div>
@@ -111,7 +141,7 @@ export default function AdminDashboard() {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Total Orders</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.totalOrders}</p>
+                <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
               </div>
             </div>
           </div>

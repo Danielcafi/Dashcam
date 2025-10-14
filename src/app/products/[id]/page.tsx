@@ -1,54 +1,56 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { ShoppingCart, Heart, Share2, Star, Check, Truck, Shield } from 'lucide-react'
-
-// Mock data - in real app, this would come from your database
-const product = {
-  id: '1',
-  name: 'Nextbase 622GW 4K Ultra HD Dash Cam',
-  price: 299.99,
-  images: [
-    '/dashcam-1.jpg',
-    '/dashcam-1-side.jpg',
-    '/dashcam-1-back.jpg',
-    '/dashcam-1-installed.jpg'
-  ],
-  stock: 15,
-  brand: 'Nextbase',
-  category: 'DASHCAM',
-  description: 'The Nextbase 622GW is our flagship 4K Ultra HD dash cam with built-in GPS, WiFi, and Alexa integration. Featuring a 140° viewing angle and emergency recording, it provides crystal-clear footage day and night.',
-  features: [
-    '4K Ultra HD recording at 30fps',
-    '140° wide-angle lens',
-    'Built-in GPS with speed camera alerts',
-    'WiFi connectivity for easy file transfer',
-    'Alexa voice control integration',
-    'Emergency recording mode',
-    'Night vision technology',
-    '2.5" LCD touchscreen display'
-  ],
-  specifications: {
-    'Resolution': '4K Ultra HD (3840x2160)',
-    'Frame Rate': '30fps',
-    'Viewing Angle': '140°',
-    'Display': '2.5" LCD touchscreen',
-    'Storage': 'MicroSD card (up to 128GB)',
-    'Connectivity': 'WiFi, GPS, Bluetooth',
-    'Power': '12V car adapter included',
-    'Dimensions': '110 x 65 x 35mm',
-    'Weight': '180g'
-  },
-  rating: 4.8,
-  reviewCount: 127
-}
+import { getProduct } from '@/lib/firestore'
 
 export default function ProductPage({ params }: { params: { id: string } }) {
+  const [product, setProduct] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
+
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        const productData = await getProduct(params.id)
+        setProduct(productData)
+      } catch (error) {
+        console.error('Error loading product:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadProduct()
+  }, [params.id])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading product...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
+          <Link href="/shop">
+            <Button>Back to Shop</Button>
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -82,7 +84,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </div>
             
             <div className="grid grid-cols-4 gap-2">
-              {product.images.map((image, index) => (
+              {product.images.map((image: string, index: number) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -191,7 +193,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             <div className="mb-8">
               <h3 className="text-lg font-semibold mb-4">Key Features</h3>
               <ul className="space-y-2">
-                {product.features.slice(0, 4).map((feature, index) => (
+                {product.features.slice(0, 4).map((feature: string, index: number) => (
                   <li key={index} className="flex items-center">
                     <Check className="h-4 w-4 text-green-600 mr-2 flex-shrink-0" />
                     <span className="text-sm">{feature}</span>
@@ -240,7 +242,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
               
               <h3 className="text-lg font-semibold mb-4">All Features</h3>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {product.features.map((feature, index) => (
+                {product.features.map((feature: string, index: number) => (
                   <li key={index} className="flex items-center">
                     <Check className="h-4 w-4 text-green-600 mr-2 flex-shrink-0" />
                     <span className="text-sm">{feature}</span>

@@ -1,94 +1,74 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ProductCard from '@/components/ProductCard'
 import { Button } from '@/components/ui/Button'
 import { Filter, Grid, List } from 'lucide-react'
-
-// Mock data - in real app, this would come from your database
-const products = [
-  {
-    id: '1',
-    name: 'Nextbase 622GW 4K Ultra HD Dash Cam',
-    price: 299.99,
-    images: ['/dashcam-1.jpg'],
-    stock: 15,
-    brand: 'Nextbase',
-    category: 'DASHCAM'
-  },
-  {
-    id: '2',
-    name: 'Garmin Dash Cam 67W',
-    price: 249.99,
-    images: ['/dashcam-2.jpg'],
-    stock: 8,
-    brand: 'Garmin',
-    category: 'DASHCAM'
-  },
-  {
-    id: '3',
-    name: 'Thinkware U1000 4K Dash Cam',
-    price: 399.99,
-    images: ['/dashcam-3.jpg'],
-    stock: 12,
-    brand: 'Thinkware',
-    category: 'DASHCAM'
-  },
-  {
-    id: '4',
-    name: 'Nextbase Hardwiring Kit',
-    price: 49.99,
-    images: ['/hardwiring-1.jpg'],
-    stock: 25,
-    brand: 'Nextbase',
-    category: 'HARDWIRING_KIT'
-  },
-  {
-    id: '5',
-    name: 'Garmin Hardwiring Kit',
-    price: 39.99,
-    images: ['/hardwiring-2.jpg'],
-    stock: 18,
-    brand: 'Garmin',
-    category: 'HARDWIRING_KIT'
-  },
-  {
-    id: '6',
-    name: 'MicroSD Card 128GB',
-    price: 24.99,
-    images: ['/accessory-1.jpg'],
-    stock: 50,
-    brand: 'SanDisk',
-    category: 'ACCESSORY'
-  }
-]
-
-const brands = ['All', 'Nextbase', 'Garmin', 'Thinkware', 'SanDisk']
-const categories = ['All', 'Dashcams', 'Hardwiring Kits', 'Accessories']
+import { getProducts } from '@/lib/firestore'
 
 export default function ShopPage() {
+  const [products, setProducts] = useState<any[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedBrand, setSelectedBrand] = useState('All')
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [priceRange, setPriceRange] = useState([0, 500])
   const [sortBy, setSortBy] = useState('name')
+  const [loading, setLoading] = useState(true)
 
-  const filteredProducts = products
-    .filter(product => selectedBrand === 'All' || product.brand === selectedBrand)
-    .filter(product => {
-      if (selectedCategory === 'All') return true
-      if (selectedCategory === 'Dashcams') return product.category === 'DASHCAM'
-      if (selectedCategory === 'Hardwiring Kits') return product.category === 'HARDWIRING_KIT'
-      if (selectedCategory === 'Accessories') return product.category === 'ACCESSORY'
-      return true
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        const productsData = await getProducts()
+        setProducts(productsData)
+        setFilteredProducts(productsData)
+      } catch (error) {
+        console.error('Error loading products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadProducts()
+  }, [])
+
+  // Get unique brands and categories from products
+  const brands = ['All', ...new Set(products.map(p => p.brand).filter(Boolean))]
+  const categories = ['All', 'Dashcams', 'Hardwiring Kits', 'Accessories']
+
+  useEffect(() => {
+    let filtered = products.filter(product => {
+      const brandMatch = selectedBrand === 'All' || product.brand === selectedBrand
+      const categoryMatch = selectedCategory === 'All' || 
+        (selectedCategory === 'Dashcams' && product.category === 'DASHCAM') ||
+        (selectedCategory === 'Hardwiring Kits' && product.category === 'HARDWIRING_KIT') ||
+        (selectedCategory === 'Accessories' && product.category === 'ACCESSORY')
+      const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1]
+      
+      return brandMatch && categoryMatch && priceMatch
     })
-    .filter(product => product.price >= priceRange[0] && product.price <= priceRange[1])
-    .sort((a, b) => {
+
+    // Sort products
+    filtered.sort((a, b) => {
       if (sortBy === 'name') return a.name.localeCompare(b.name)
       if (sortBy === 'price-low') return a.price - b.price
       if (sortBy === 'price-high') return b.price - a.price
       return 0
     })
+
+    setFilteredProducts(filtered)
+  }, [products, selectedBrand, selectedCategory, priceRange, sortBy])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">

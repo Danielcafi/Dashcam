@@ -1,81 +1,49 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import BlogCard from '@/components/BlogCard'
 import { Button } from '@/components/ui/Button'
 import { Search, Calendar, User } from 'lucide-react'
-
-// Mock data - in real app, this would come from your database
-const blogPosts = [
-  {
-    id: '1',
-    title: 'How to Choose the Right Dashcam for Your Vehicle',
-    excerpt: 'Learn about the key features to consider when selecting a dashcam that meets your needs and budget. From resolution and viewing angles to storage and connectivity options.',
-    image: '/blog-1.jpg',
-    createdAt: new Date('2024-01-15'),
-    slug: 'how-to-choose-right-dashcam',
-    author: 'John Smith',
-    readTime: '5 min read'
-  },
-  {
-    id: '2',
-    title: 'Professional Installation vs DIY: What You Need to Know',
-    excerpt: 'Discover the benefits of professional dashcam installation and when DIY might be sufficient. We break down the pros and cons of each approach.',
-    image: '/blog-2.jpg',
-    createdAt: new Date('2024-01-10'),
-    slug: 'professional-vs-diy-installation',
-    author: 'Sarah Johnson',
-    readTime: '7 min read'
-  },
-  {
-    id: '3',
-    title: 'Understanding Dashcam Hardwiring: A Complete Guide',
-    excerpt: 'Everything you need to know about hardwiring your dashcam for parking mode functionality. Step-by-step guide with safety tips and best practices.',
-    image: '/blog-3.jpg',
-    createdAt: new Date('2024-01-05'),
-    slug: 'dashcam-hardwiring-complete-guide',
-    author: 'Mike Wilson',
-    readTime: '8 min read'
-  },
-  {
-    id: '4',
-    title: 'Best Dashcams for 2024: Our Top Picks',
-    excerpt: 'Our comprehensive review of the best dashcams available in 2024, covering different price ranges and use cases. Find the perfect dashcam for your needs.',
-    image: '/blog-4.jpg',
-    createdAt: new Date('2024-01-01'),
-    slug: 'best-dashcams-2024-top-picks',
-    author: 'Emma Davis',
-    readTime: '12 min read'
-  },
-  {
-    id: '5',
-    title: 'Dashcam Legal Requirements in the UK',
-    excerpt: 'Understanding the legal aspects of using dashcams in the UK, including data protection, privacy laws, and what footage can be used as evidence.',
-    image: '/blog-5.jpg',
-    createdAt: new Date('2023-12-28'),
-    slug: 'dashcam-legal-requirements-uk',
-    author: 'David Brown',
-    readTime: '6 min read'
-  },
-  {
-    id: '6',
-    title: 'Maintaining Your Dashcam: Tips for Longevity',
-    excerpt: 'Keep your dashcam in top condition with our maintenance guide. Learn about cleaning, storage, firmware updates, and troubleshooting common issues.',
-    image: '/blog-6.jpg',
-    createdAt: new Date('2023-12-20'),
-    slug: 'maintaining-dashcam-tips-longevity',
-    author: 'Lisa Anderson',
-    readTime: '4 min read'
-  }
-]
-
-const categories = [
-  { name: 'All', count: 24 },
-  { name: 'Buying Guides', count: 8 },
-  { name: 'Installation', count: 6 },
-  { name: 'Reviews', count: 5 },
-  { name: 'Legal', count: 3 },
-  { name: 'Maintenance', count: 2 }
-]
+import { getBlogPosts } from '@/lib/firestore'
 
 export default function BlogPage() {
+  const [blogPosts, setBlogPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const loadBlogPosts = async () => {
+      try {
+        const posts = await getBlogPosts()
+        setBlogPosts(posts)
+      } catch (error) {
+        console.error('Error loading blog posts:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    loadBlogPosts()
+  }, [])
+
+  const categories = [
+    { name: 'All', count: blogPosts.length },
+    { name: 'Buying Guides', count: blogPosts.filter(p => p.category === 'Buying Guides').length },
+    { name: 'Installation', count: blogPosts.filter(p => p.category === 'Installation').length },
+    { name: 'Reviews', count: blogPosts.filter(p => p.category === 'Reviews').length },
+    { name: 'Legal', count: blogPosts.filter(p => p.category === 'Legal').length },
+    { name: 'Maintenance', count: blogPosts.filter(p => p.category === 'Maintenance').length }
+  ]
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading blog posts...</p>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

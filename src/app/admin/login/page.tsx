@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
-import { signIn, getSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { signIn } from '@/lib/firebase-auth'
+import { auth } from '@/lib/firebase'
+import { onAuthStateChanged } from 'firebase/auth'
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
@@ -14,30 +16,30 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('')
   const router = useRouter()
 
+  useEffect(() => {
+    // Check if already logged in with demo credentials
+    const isLoggedIn = localStorage.getItem('adminLoggedIn')
+    if (isLoggedIn === 'true') {
+      router.push('/admin')
+    }
+  }, [router])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError('')
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      })
-
-      if (result?.error) {
-        setError('Invalid email or password')
+      // Demo login - check credentials without Firebase
+      if (email === 'admin@dashcams.co.uk' && password === 'admin123') {
+        // Simulate successful login
+        localStorage.setItem('adminLoggedIn', 'true')
+        localStorage.setItem('adminEmail', email)
+        router.push('/admin')
       } else {
-        // Check if user is admin
-        const session = await getSession()
-        if (session?.user?.role === 'ADMIN') {
-          router.push('/admin')
-        } else {
-          setError('Access denied. Admin privileges required.')
-        }
+        setError('Invalid email or password. Please use the demo credentials.')
       }
-    } catch (error) {
+    } catch (error: any) {
       setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
@@ -78,7 +80,7 @@ export default function AdminLoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-bold text-black"
                   placeholder="admin@dashcams.co.uk"
                 />
               </div>
@@ -98,13 +100,14 @@ export default function AdminLoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="appearance-none block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-bold text-black"
                   placeholder="Enter your password"
                 />
                 <button
                   type="button"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
                   onClick={() => setShowPassword(!showPassword)}
+                  title={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
