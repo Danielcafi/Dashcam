@@ -18,6 +18,10 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ['firebase'],
   outputFileTracingRoot: __dirname,
   
+  // Ensure proper build output
+  trailingSlash: false,
+  generateEtags: false,
+  
   // Performance optimizations
   experimental: {
     optimizeCss: true,
