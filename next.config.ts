@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
   
   // Performance optimizations
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false, // Disable CSS optimization to avoid critters issue
     optimizePackageImports: ['lucide-react', '@tanstack/react-query'],
   },
   

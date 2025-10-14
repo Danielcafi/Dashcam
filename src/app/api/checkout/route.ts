@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { createStripeInstance } from '@/lib/stripe-utils'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +15,15 @@ export async function POST(request: NextRequest) {
 
     if (!items || items.length === 0) {
       return NextResponse.json({ error: 'No items provided' }, { status: 400 })
+    }
+
+    // Get Stripe instance
+    const stripe = createStripeInstance()
+    if (!stripe) {
+      return NextResponse.json(
+        { error: 'Stripe not configured' },
+        { status: 500 }
+      )
     }
 
     // Create Stripe checkout session

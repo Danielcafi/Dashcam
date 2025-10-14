@@ -1,7 +1,7 @@
 import Stripe from 'stripe'
 
-// Safe initialization that won't fail during build
-export const getStripe = (): Stripe | null => {
+// Safe Stripe initialization that won't fail during build
+export const createStripeInstance = () => {
   if (!process.env.STRIPE_SECRET_KEY) {
     return null
   }
@@ -16,9 +16,6 @@ export const getStripe = (): Stripe | null => {
     return null
   }
 }
-
-// For backward compatibility - returns null if not configured
-export const stripe = getStripe()
 
 export const formatAmountForDisplay = (amount: number, currency: string): string => {
   const numberFormat = new Intl.NumberFormat(['en-GB'], {
