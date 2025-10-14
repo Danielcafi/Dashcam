@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
 
@@ -186,9 +187,9 @@ export default function ContactPage() {
                 <a href="/installers" className="block text-blue-600 hover:text-blue-700 transition">
                   Find an Installer
                 </a>
-                <a href="/blog" className="block text-blue-600 hover:text-blue-700 transition">
+                <Link href="/blog" className="block text-blue-600 hover:text-blue-700 transition">
                   Read Our Blog
-                </a>
+                </Link>
                 <a href="/faq" className="block text-blue-600 hover:text-blue-700 transition">
                   Frequently Asked Questions
                 </a>

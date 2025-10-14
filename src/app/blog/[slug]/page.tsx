@@ -2,26 +2,28 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { ArrowLeft, Calendar, User, Clock, Share2, Heart } from 'lucide-react'
 import { getBlogPost, getBlogPosts } from '@/lib/firestore'
 
-export default function BlogPostPage({ params }: { params: { slug: string } }) {
-  const [blogPost, setBlogPost] = useState<any>(null)
-  const [relatedPosts, setRelatedPosts] = useState<any[]>([])
+export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const [blogPost, setBlogPost] = useState<{ title: string; content: string; author: string; date: string; image: string; category: string; slug: string; createdAt?: string; readTime?: string; tags?: string[] } | null>(null)
+  const [relatedPosts, setRelatedPosts] = useState<Array<{ id: string; title: string; content: string; author: string; date: string; image: string; category: string; slug: string; excerpt?: string }>>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadBlogPost = async () => {
       try {
+        const resolvedParams = await params
         const [post, allPosts] = await Promise.all([
-          getBlogPost(params.slug),
+          getBlogPost(resolvedParams.slug),
           getBlogPosts()
         ])
         
-        setBlogPost(post)
+        setBlogPost(post as unknown as { title: string; content: string; author: string; date: string; image: string; category: string; slug: string; createdAt?: string; readTime?: string; tags?: string[] } | null)
         // Get 3 related posts (excluding current one)
-        setRelatedPosts(allPosts.filter((p: any) => p.slug !== params.slug).slice(0, 3))
+        setRelatedPosts((allPosts as unknown[]).filter((p: unknown) => (p as { slug: string }).slug !== resolvedParams.slug).slice(0, 3) as unknown as Array<{ id: string; title: string; content: string; author: string; date: string; image: string; category: string; slug: string; excerpt?: string }>)
       } catch (error) {
         console.error('Error loading blog post:', error)
       } finally {
@@ -30,7 +32,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
     }
 
     loadBlogPost()
-  }, [params.slug])
+  }, [params])
 
   if (loading) {
     return (
@@ -87,24 +89,25 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             </div>
             <div className="flex items-center">
               <Calendar className="h-5 w-5 mr-2" />
-              <span>{new Date(blogPost.createdAt).toLocaleDateString('en-GB', {
+              <span>{blogPost.createdAt ? new Date(blogPost.createdAt).toLocaleDateString('en-GB', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-              })}</span>
+              }) : blogPost.date}</span>
             </div>
             <div className="flex items-center">
               <Clock className="h-5 w-5 mr-2" />
-              <span>{blogPost.readTime}</span>
+              <span>{blogPost.readTime || '5 min read'}</span>
             </div>
           </div>
 
           {/* Featured Image */}
           <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-8">
-            <img
+            <Image
               src={blogPost.image}
               alt={blogPost.title}
-              className="w-full h-full object-cover"
+              fill
+              className="object-cover"
             />
           </div>
 
@@ -130,7 +133,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
         <div className="mt-12 mb-8">
           <h3 className="text-lg font-semibold mb-4">Tags</h3>
           <div className="flex flex-wrap gap-2">
-            {blogPost.tags.map((tag: string) => (
+            {blogPost.tags?.map((tag: string) => (
               <span
                 key={tag}
                 className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-700 transition cursor-pointer"
@@ -148,10 +151,11 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             {relatedPosts.map((post) => (
               <article key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="aspect-video bg-gray-100">
-                  <img
+                  <Image
                     src={post.image}
                     alt={post.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    className="object-cover"
                   />
                 </div>
                 <div className="p-6">
@@ -159,7 +163,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
                     {post.title}
                   </h3>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {post.excerpt}
+                    {post.excerpt || post.content.substring(0, 150) + '...'}
                   </p>
                   <Link 
                     href={`/blog/${post.slug}`}

@@ -1,20 +1,21 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import BlogCard from '@/components/BlogCard'
 import { Button } from '@/components/ui/Button'
 import { Search, Calendar, User } from 'lucide-react'
 import { getBlogPosts } from '@/lib/firestore'
 
 export default function BlogPage() {
-  const [blogPosts, setBlogPosts] = useState<any[]>([])
+  const [blogPosts, setBlogPosts] = useState<Array<{ id: string; title: string; content: string; author: string; date: string; image: string; category: string; slug: string; excerpt: string; createdAt: Date }>>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadBlogPosts = async () => {
       try {
         const posts = await getBlogPosts()
-        setBlogPosts(posts)
+        setBlogPosts(posts as unknown as Array<{ id: string; title: string; content: string; author: string; date: string; image: string; category: string; slug: string; excerpt: string; createdAt: Date }>)
       } catch (error) {
         console.error('Error loading blog posts:', error)
       } finally {
@@ -104,10 +105,11 @@ export default function BlogPage() {
             {/* Featured Post */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden mb-8">
               <div className="relative h-64">
-                <img
+                <Image
                   src="/blog-featured.jpg"
                   alt="Featured post"
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <div className="absolute bottom-6 left-6 text-white">

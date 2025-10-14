@@ -7,8 +7,8 @@ import { Button } from '@/components/ui/Button'
 import { ShoppingCart, Heart, Share2, Star, Check, Truck, Shield } from 'lucide-react'
 import { getProduct } from '@/lib/firestore'
 
-export default function ProductPage({ params }: { params: { id: string } }) {
-  const [product, setProduct] = useState<any>(null)
+export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const [product, setProduct] = useState<{ id: string; name: string; price: number; description: string; images: string[]; features: string[]; specifications: Record<string, string>; brand: string; rating: number; reviewCount: number; stock: number } | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(0)
   const [quantity, setQuantity] = useState(1)
@@ -16,8 +16,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   useEffect(() => {
     const loadProduct = async () => {
       try {
-        const productData = await getProduct(params.id)
-        setProduct(productData)
+        const resolvedParams = await params
+        const productData = await getProduct(resolvedParams.id)
+        setProduct(productData as unknown as { id: string; name: string; price: number; description: string; images: string[]; features: string[]; specifications: Record<string, string>; brand: string; rating: number; reviewCount: number; stock: number } | null)
       } catch (error) {
         console.error('Error loading product:', error)
       } finally {
@@ -26,7 +27,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     }
 
     loadProduct()
-  }, [params.id])
+  }, [params])
 
   if (loading) {
     return (

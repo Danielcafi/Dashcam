@@ -9,7 +9,7 @@ import { CheckCircle, Package, Mail } from 'lucide-react'
 export default function CheckoutSuccessPage() {
   const searchParams = useSearchParams()
   const sessionId = searchParams.get('session_id')
-  const [orderDetails, setOrderDetails] = useState<any>(null)
+  const [orderDetails, setOrderDetails] = useState<{ id: string; total: number; items: Array<{ name: string; quantity: number; price: number }>; customerEmail: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -68,7 +68,7 @@ export default function CheckoutSuccessPage() {
                 </div>
                 
                 <div className="space-y-3">
-                  {orderDetails.items.map((item: any, index: number) => (
+                  {orderDetails.items.map((item: { name: string; quantity: number; price: number }, index: number) => (
                     <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
                       <div>
                         <p className="font-medium text-gray-900">{item.name}</p>
@@ -94,7 +94,7 @@ export default function CheckoutSuccessPage() {
 
           {/* Next Steps */}
           <div className="border-t border-gray-200 pt-8 mb-8">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">What's Next?</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">What&apos;s Next?</h3>
             
             <div className="space-y-4">
               <div className="flex items-start">
@@ -105,7 +105,7 @@ export default function CheckoutSuccessPage() {
                 </div>
                 <div className="ml-4">
                   <h4 className="font-medium text-gray-900">Order Processing</h4>
-                  <p className="text-sm text-gray-600">We'll prepare your order for dispatch within 1-2 business days.</p>
+                  <p className="text-sm text-gray-600">We&apos;ll prepare your order for dispatch within 1-2 business days.</p>
                 </div>
               </div>
               
@@ -117,7 +117,7 @@ export default function CheckoutSuccessPage() {
                 </div>
                 <div className="ml-4">
                   <h4 className="font-medium text-gray-900">Shipping</h4>
-                  <p className="text-sm text-gray-600">You'll receive tracking information once your order ships.</p>
+                  <p className="text-sm text-gray-600">You&apos;ll receive tracking information once your order ships.</p>
                 </div>
               </div>
               

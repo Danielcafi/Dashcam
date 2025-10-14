@@ -7,8 +7,8 @@ import { Filter, Grid, List } from 'lucide-react'
 import { getProducts } from '@/lib/firestore'
 
 export default function ShopPage() {
-  const [products, setProducts] = useState<any[]>([])
-  const [filteredProducts, setFilteredProducts] = useState<any[]>([])
+  const [products, setProducts] = useState<Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>>([])
+  const [filteredProducts, setFilteredProducts] = useState<Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>>([])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedBrand, setSelectedBrand] = useState('All')
   const [selectedCategory, setSelectedCategory] = useState('All')
@@ -20,8 +20,8 @@ export default function ShopPage() {
     const loadProducts = async () => {
       try {
         const productsData = await getProducts()
-        setProducts(productsData)
-        setFilteredProducts(productsData)
+        setProducts(productsData as unknown as Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>)
+        setFilteredProducts(productsData as unknown as Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>)
       } catch (error) {
         console.error('Error loading products:', error)
       } finally {
@@ -37,7 +37,7 @@ export default function ShopPage() {
   const categories = ['All', 'Dashcams', 'Hardwiring Kits', 'Accessories']
 
   useEffect(() => {
-    let filtered = products.filter(product => {
+    const filtered = products.filter(product => {
       const brandMatch = selectedBrand === 'All' || product.brand === selectedBrand
       const categoryMatch = selectedCategory === 'All' || 
         (selectedCategory === 'Dashcams' && product.category === 'DASHCAM') ||

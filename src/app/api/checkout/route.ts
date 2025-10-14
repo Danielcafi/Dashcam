@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { stripe } from '@/lib/stripe'
-import { addOrder } from '@/lib/firestore'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +12,7 @@ export async function POST(request: NextRequest) {
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: items.map((item: any) => ({
+      line_items: items.map((item: { name: string; images: string[]; price: number; quantity: number }) => ({
         price_data: {
           currency: 'gbp',
           product_data: {

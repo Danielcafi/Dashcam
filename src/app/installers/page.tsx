@@ -7,8 +7,8 @@ import { Search, MapPin, Filter } from 'lucide-react'
 import { getInstallers } from '@/lib/firestore'
 
 export default function InstallersPage() {
-  const [installers, setInstallers] = useState<any[]>([])
-  const [filteredInstallers, setFilteredInstallers] = useState<any[]>([])
+  const [installers, setInstallers] = useState<Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>>([])
+  const [filteredInstallers, setFilteredInstallers] = useState<Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedLocation, setSelectedLocation] = useState('')
   const [showMap, setShowMap] = useState(false)
@@ -18,8 +18,8 @@ export default function InstallersPage() {
     const loadInstallers = async () => {
       try {
         const installersData = await getInstallers()
-        setInstallers(installersData)
-        setFilteredInstallers(installersData)
+        setInstallers(installersData as unknown as Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>)
+        setFilteredInstallers(installersData as unknown as Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>)
       } catch (error) {
         console.error('Error loading installers:', error)
       } finally {
@@ -34,7 +34,7 @@ export default function InstallersPage() {
     const filtered = installers.filter(installer => {
       const matchesSearch = installer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            installer.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           installer.description.toLowerCase().includes(searchTerm.toLowerCase())
+                            installer.description.toLowerCase().includes(searchTerm.toLowerCase())
       
       const matchesLocation = selectedLocation === '' || installer.location.includes(selectedLocation)
       

@@ -8,10 +8,7 @@ import {
   deleteDoc, 
   query, 
   where, 
-  orderBy,
-  limit,
-  DocumentData,
-  QueryDocumentSnapshot
+  orderBy
 } from 'firebase/firestore'
 import { db } from './firebase'
 
@@ -41,7 +38,7 @@ export const getProduct = async (id: string) => {
   }
 }
 
-export const addProduct = async (productData: any) => {
+export const addProduct = async (productData: Record<string, unknown>) => {
   try {
     const docRef = await addDoc(collection(db, 'products'), productData)
     return docRef.id
@@ -51,7 +48,7 @@ export const addProduct = async (productData: any) => {
   }
 }
 
-export const updateProduct = async (id: string, productData: any) => {
+export const updateProduct = async (id: string, productData: Record<string, unknown>) => {
   try {
     const productRef = doc(db, 'products', id)
     await updateDoc(productRef, productData)
@@ -101,7 +98,7 @@ export const getBlogPost = async (slug: string) => {
   }
 }
 
-export const addBlogPost = async (postData: any) => {
+export const addBlogPost = async (postData: Record<string, unknown>) => {
   try {
     const docRef = await addDoc(collection(db, 'blogPosts'), {
       ...postData,
@@ -126,7 +123,7 @@ export const getInstallers = async () => {
   }
 }
 
-export const addInstaller = async (installerData: any) => {
+export const addInstaller = async (installerData: Record<string, unknown>) => {
   try {
     const docRef = await addDoc(collection(db, 'installers'), installerData)
     return docRef.id
@@ -137,7 +134,7 @@ export const addInstaller = async (installerData: any) => {
 }
 
 // Orders
-export const addOrder = async (orderData: any) => {
+export const addOrder = async (orderData: Record<string, unknown>) => {
   try {
     const docRef = await addDoc(collection(db, 'orders'), {
       ...orderData,

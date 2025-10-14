@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { 
   Package, 
-  Users, 
   ShoppingCart, 
   FileText, 
   MapPin, 
@@ -41,10 +40,10 @@ const recentProducts = [
 ]
 
 export default function AdminDashboard() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ email: string } | null>(null)
   const [loading, setLoading] = useState(true)
-  const [products, setProducts] = useState<any[]>([])
-  const [orders, setOrders] = useState<any[]>([])
+  const [products, setProducts] = useState<Array<{ id: string; name: string; stock: number; price: number }>>([])
+  const [orders, setOrders] = useState<Array<{ id: string; customer: string; total: number; status: string; date: string }>>([])
   const router = useRouter()
 
   useEffect(() => {
@@ -71,16 +70,7 @@ export default function AdminDashboard() {
     }
   }
 
-  const handleSignOut = async () => {
-    try {
-      // Clear demo authentication
-      localStorage.removeItem('adminLoggedIn')
-      localStorage.removeItem('adminEmail')
-      router.push('/admin/login')
-    } catch (error) {
-      console.error('Error signing out:', error)
-    }
-  }
+  // Removed unused handleSignOut function
 
   if (loading) {
     return (

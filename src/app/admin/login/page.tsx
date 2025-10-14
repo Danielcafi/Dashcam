@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
-import { signIn } from '@/lib/firebase-auth'
-import { auth } from '@/lib/firebase'
-import { onAuthStateChanged } from 'firebase/auth'
+// Removed unused imports
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('')
@@ -39,7 +37,7 @@ export default function AdminLoginPage() {
       } else {
         setError('Invalid email or password. Please use the demo credentials.')
       }
-    } catch (error: any) {
+    } catch {
       setError('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)
