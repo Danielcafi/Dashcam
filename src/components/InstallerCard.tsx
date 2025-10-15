@@ -12,7 +12,7 @@ interface InstallerCardProps {
 
 export default function InstallerCard({ name, location, email, phone, description }: InstallerCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-6">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 p-6 group hover:-translate-y-1">
       <div className="flex justify-between items-start mb-4">
         <h3 className="text-xl font-semibold text-gray-900">{name}</h3>
         <div className="flex items-center text-gray-500">
@@ -36,8 +36,8 @@ export default function InstallerCard({ name, location, email, phone, descriptio
         </div>
       </div>
       
-      <div className="flex space-x-2">
-        <Button variant="outline" size="sm" className="flex-1">
+      <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <Button variant="outline" size="sm" className="flex-1 hover:bg-blue-50 hover:border-blue-300">
           View Profile
         </Button>
         <Button variant="primary" size="sm" className="flex-1">

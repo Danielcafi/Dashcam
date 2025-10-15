@@ -14,13 +14,13 @@ interface ProductCardProps {
 
 export default function ProductCard({ id, name, price, images, stock, brand }: ProductCardProps) {
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 overflow-hidden group hover:-translate-y-1">
       <div className="relative h-48 w-full">
         <Image
           src={images[0] || '/placeholder-product.jpg'}
           alt={name}
           fill
-          className="object-cover"
+          className="object-cover group-hover:scale-110 transition-transform duration-500"
         />
         {stock === 0 && (
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -45,9 +45,9 @@ export default function ProductCard({ id, name, price, images, stock, brand }: P
           </span>
         </div>
         
-        <div className="flex space-x-2">
+        <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <Link href={`/products/${id}`} className="flex-1">
-            <Button variant="outline" size="sm" className="w-full">
+            <Button variant="outline" size="sm" className="w-full hover:bg-blue-50 hover:border-blue-300">
               <Eye className="h-4 w-4 mr-2" />
               View Details
             </Button>

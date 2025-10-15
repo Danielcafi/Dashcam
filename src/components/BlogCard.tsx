@@ -12,13 +12,13 @@ interface BlogCardProps {
 
 export default function BlogCard({ title, excerpt, image, createdAt, slug }: BlogCardProps) {
   return (
-    <article className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+    <article className="bg-white rounded-lg shadow-md hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 overflow-hidden group hover:-translate-y-1">
       <div className="relative h-48 w-full">
         <Image
           src={image || '/placeholder-blog.jpg'}
           alt={title}
           fill
-          className="object-cover"
+          className="object-cover group-hover:scale-110 transition-transform duration-500"
         />
       </div>
       
@@ -41,10 +41,10 @@ export default function BlogCard({ title, excerpt, image, createdAt, slug }: Blo
         
         <Link 
           href={`/blog/${slug}`}
-          className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
+          className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium group-hover:translate-x-2 transition-transform duration-300"
         >
           Read More
-          <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </Link>

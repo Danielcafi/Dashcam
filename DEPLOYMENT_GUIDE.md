@@ -58,3 +58,4 @@ The project is configured with:
 1. Connect your GitHub repository to Vercel
 2. Add all environment variables
 3. Deploy automatically on push to main branch
+

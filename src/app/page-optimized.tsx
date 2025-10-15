@@ -4,7 +4,7 @@ import { Suspense, lazy } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
-// import { Search } from 'lucide-react' // Removed unused import
+import { Search } from 'lucide-react'
 
 // Lazy load heavy components
 const FeaturedProducts = lazy(() => import('@/components/FeaturedProducts'))
@@ -24,6 +24,7 @@ export default function Home() {
           playsInline
           poster="/cam1.webp"
           preload="metadata"
+          loading="lazy"
         >
           <source src="/hero-new.mp4" type="video/mp4" />
           {/* Fallback for older browsers */}
@@ -32,7 +33,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/50"></div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-          <div className="grid grid-cols-1 gap-12 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-5xl md:text-7xl font-bold mb-8">
                 Premium Dashcams & Professional Installation
@@ -42,18 +43,32 @@ export default function Home() {
               </p>
               <div className="flex flex-col sm:flex-row gap-6">
                 <Link href="/shop" prefetch={true}>
-                  <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300">
+                  <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-4">
                     Shop Dashcams
                   </Button>
                 </Link>
                 <Link href="/installers" prefetch={true}>
-                  <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 hover:border-blue-300 hover:shadow-2xl hover:shadow-white/20 text-lg px-8 py-4 transform hover:scale-105 transition-all duration-300">
+                  <Button variant="outline" size="lg" className="w-full sm:w-auto bg-transparent border-white text-white hover:bg-white hover:text-blue-600 text-lg px-8 py-4">
                     Find Installers
                   </Button>
                 </Link>
               </div>
             </div>
             
+            {/* Hero Image */}
+            <div className="relative">
+              <div className="relative h-96 lg:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+                <Image
+                  src="/mercedes1.webp"
+                  alt="Professional Dashcam Installation"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -141,7 +156,7 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Hardwiring & Configuration</h3>
-                      <p className="text-blue-100">Professional hardwiring to your vehicle&apos;s electrical system for seamless operation.</p>
+                      <p className="text-blue-100">Professional hardwiring to your vehicle's electrical system for seamless operation.</p>
                     </div>
                   </div>
                   
@@ -249,3 +264,4 @@ export default function Home() {
     </div>
   )
 }
+
