@@ -23,7 +23,6 @@ export default function Home() {
           playsInline
           poster="/cam1.webp"
           preload="metadata"
-          loading="lazy"
         >
           <source src="/hero-new.mp4" type="video/mp4" />
           {/* Fallback for older browsers */}
