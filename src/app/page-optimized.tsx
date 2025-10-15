@@ -4,7 +4,6 @@ import { Suspense, lazy } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
-import { Search } from 'lucide-react'
 
 // Lazy load heavy components
 const FeaturedProducts = lazy(() => import('@/components/FeaturedProducts'))
@@ -156,7 +155,7 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Hardwiring & Configuration</h3>
-                      <p className="text-blue-100">Professional hardwiring to your vehicle's electrical system for seamless operation.</p>
+                      <p className="text-blue-100">Professional hardwiring to your vehicle&apos;s electrical system for seamless operation.</p>
                     </div>
                   </div>
                   
