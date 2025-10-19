@@ -13,8 +13,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "db:seed": "prisma db seed",
-    "postinstall": "prisma generate"
+    "db:seed": "prisma db seed"
   },
   "dependencies": {
     "@stripe/stripe-js": "^8.0.0",
