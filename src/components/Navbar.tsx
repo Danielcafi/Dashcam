@@ -11,8 +11,10 @@ import Image from 'next/image'
 export default function Navbar() {
   const [user, setUser] = useState<User | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
+    setIsHydrated(true)
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user)
     })
@@ -67,7 +69,12 @@ export default function Navbar() {
             <Button variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
               <ShoppingCart className="h-5 w-5" />
             </Button>
-            {user ? (
+            {!isHydrated ? (
+              // Show loading state during hydration to prevent mismatch
+              <div className="flex items-center space-x-2">
+                <div className="w-20 h-8 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            ) : user ? (
               <div className="flex items-center space-x-2">
                 <span className="text-sm text-gray-700">Welcome, {user.email}</span>
                 <Link href="/admin">
@@ -88,7 +95,10 @@ export default function Navbar() {
 
           {/* Mobile actions: Login/Admin + menu button */}
           <div className="md:hidden flex items-center gap-2">
-            {user ? (
+            {!isHydrated ? (
+              // Show loading state during hydration to prevent mismatch
+              <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
+            ) : user ? (
               <Link href="/admin">
                 <Button variant="outline" size="sm">Admin</Button>
               </Link>
@@ -129,7 +139,14 @@ export default function Navbar() {
               <Link href="/contact" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base" prefetch={true}>
                 Contact
               </Link>
-              {user ? (
+              {!isHydrated ? (
+                // Show loading state during hydration to prevent mismatch
+                <div className="pt-4 border-t">
+                  <div className="px-3 py-2">
+                    <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
+                  </div>
+                </div>
+              ) : user ? (
                 <div className="pt-4 border-t">
                   <div className="px-3 py-2 text-sm text-gray-500">
                     Welcome, {user.email}
