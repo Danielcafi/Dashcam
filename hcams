@@ -1,0 +1,5 @@
+[33mf008d79[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Fix video element: remove invalid loading attribute
+[33m59f5edd[m Fix Vercel deployment errors: remove unused Search import and escape apostrophe
+[33md755e94[m new changes
+[33m4073571[m 🚀 MAJOR PERFORMANCE OPTIMIZATIONS
+[33m6fa911d[m Fix Vercel build errors completely

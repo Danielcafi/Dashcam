@@ -34,7 +34,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h1 className="text-5xl md:text-7xl font-bold mb-8">
-                Premium Dashcams & Professional Installation
+                Dashcams & Professional Installation
               </h1>
               <p className="text-2xl md:text-3xl mb-10 text-blue-100 leading-relaxed">
                 Protect your vehicle with our range of high-quality dashcams and expert installation services across the UK.

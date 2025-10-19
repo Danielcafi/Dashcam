@@ -14,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "DashCams - Premium Dashcams & Professional Installation",
+  title: "DashCams - Dashcams & Professional Installation",
   description: "Your trusted partner for premium dashcams and professional installation services across the UK.",
   keywords: "dashcams, car cameras, hardwiring, installation, UK",
   robots: {
@@ -22,14 +22,14 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "DashCams - Premium Dashcams & Professional Installation",
+    title: "DashCams - Dashcams & Professional Installation",
     description: "Your trusted partner for premium dashcams and professional installation services across the UK.",
     type: "website",
     locale: "en_GB",
   },
   twitter: {
     card: "summary_large_image",
-    title: "DashCams - Premium Dashcams & Professional Installation",
+    title: "DashCams - Dashcams & Professional Installation",
     description: "Your trusted partner for premium dashcams and professional installation services across the UK.",
   },
 };
