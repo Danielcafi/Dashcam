@@ -26,3 +26,5 @@ public/_next/
 .firebase/
 .firebaserc.local
 *.tsbuildinfo
+
+/src/generated/prisma

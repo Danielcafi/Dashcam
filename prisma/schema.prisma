@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model (for installers)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  location  String?
+  bio       String?
+  rating    Float?   @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  appointments Appointment[]
+
+  @@map("users")
+}
+
+// Appointment model
+model Appointment {
+  id          String   @id @default(cuid())
+  customerName String
+  customerEmail String
+  customerPhone String
+  vehicleMake  String
+  vehicleModel String
+  vehicleYear  Int
+  serviceType  String  // e.g., "Dashcam Installation", "Hardwiring", etc.
+  preferredDate DateTime
+  status       AppointmentStatus @default(PENDING)
+  notes        String?
+  address      String
+  postcode     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Foreign key to installer
+  installerId String
+  installer   User @relation(fields: [installerId], references: [id], onDelete: Cascade)
+
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
