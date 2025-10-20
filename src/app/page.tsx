@@ -11,6 +11,7 @@ const FeaturedProducts = lazy(() => import('@/components/FeaturedProducts'))
 const RecentBlogPosts = lazy(() => import('@/components/RecentBlogPosts'))
 
 export default function Home() {
+  // Cache busting update - Premium removed
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
