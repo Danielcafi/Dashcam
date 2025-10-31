@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/products - list products
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const products = await (prisma as any).product.findMany({
       orderBy: { createdAt: 'desc' },
     })
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'name and price are required' }, { status: 400 })
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const created = await (prisma as any).product.create({
       data: {
         name,

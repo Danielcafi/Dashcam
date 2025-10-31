@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/installers - List installers
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
     const installers = await prisma.user.findMany({
       where: { isActive: true },

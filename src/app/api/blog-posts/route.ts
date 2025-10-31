@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
 // GET /api/blog-posts - list posts
-export async function GET(_request: NextRequest) {
+export async function GET() {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const posts = await (prisma as any).blogPost.findMany({
       orderBy: { createdAt: 'desc' },
     })
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'title and slug are required' }, { status: 400 })
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const created = await (prisma as any).blogPost.create({
       data: { title, slug, excerpt, content, image },
     })
