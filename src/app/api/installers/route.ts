@@ -1,6 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// GET /api/installers - List installers
+export async function GET(_request: NextRequest) {
+  try {
+    const installers = await prisma.user.findMany({
+      where: { isActive: true },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phone: true,
+        location: true,
+        bio: true,
+        rating: true,
+        isActive: true,
+        createdAt: true,
+      },
+    })
+    return NextResponse.json(installers)
+  } catch (error) {
+    console.error('Error fetching installers:', error)
+    return NextResponse.json({ error: 'Failed to fetch installers' }, { status: 500 })
+  }
+}
+
 // POST /api/installers - Create new installer
 export async function POST(request: NextRequest) {
   try {

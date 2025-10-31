@@ -9,7 +9,7 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
   display: 'swap',
-  preload: true,
+  preload: false, // Disable preload to prevent unused CSS warnings
   fallback: ['system-ui', 'arial'],
 });
 

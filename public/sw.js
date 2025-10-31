@@ -1,7 +1,7 @@
 // Service Worker for caching
-const CACHE_NAME = 'dashcams-v1'
-const STATIC_CACHE = 'dashcams-static-v1'
-const DYNAMIC_CACHE = 'dashcams-dynamic-v1'
+const CACHE_NAME = 'dashcams-v2'
+const STATIC_CACHE = 'dashcams-static-v2'
+const DYNAMIC_CACHE = 'dashcams-dynamic-v2'
 
 // Static assets to cache
 const STATIC_ASSETS = [
@@ -10,7 +10,6 @@ const STATIC_ASSETS = [
   '/installers',
   '/blog',
   '/contact',
-  '/cam1.webp',
   '/cam2.webp',
   '/cam3.webp',
   '/mercedes1.webp',
@@ -37,9 +36,8 @@ self.addEventListener('activate', (event) => {
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
-            if (cacheName !== STATIC_CACHE && cacheName !== DYNAMIC_CACHE) {
-              return caches.delete(cacheName)
-            }
+            // Delete ALL old caches to remove Firebase
+            return caches.delete(cacheName)
           })
         )
       })

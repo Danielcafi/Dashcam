@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import InstallerCard from '@/components/InstallerCard'
 import { Button } from '@/components/ui/Button'
 import { Search, MapPin, Filter } from 'lucide-react'
-import { getInstallers } from '@/lib/firestore'
-
 export default function InstallersPage() {
   const [installers, setInstallers] = useState<Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>>([])
   const [filteredInstallers, setFilteredInstallers] = useState<Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>>([])
@@ -17,9 +15,13 @@ export default function InstallersPage() {
   useEffect(() => {
     const loadInstallers = async () => {
       try {
-        const installersData = await getInstallers()
-        setInstallers(installersData as unknown as Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>)
-        setFilteredInstallers(installersData as unknown as Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>)
+        const response = await fetch('/api/installers')
+        if (!response.ok) throw new Error('Failed to fetch installers')
+        const installersData = await response.json()
+        // Transform API response to match expected format
+        const formattedInstallers = Array.isArray(installersData) ? installersData : []
+        setInstallers(formattedInstallers as unknown as Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>)
+        setFilteredInstallers(formattedInstallers as unknown as Array<{ id: string; name: string; location: string; rating: number; services: string[]; contact: string; description: string; email: string; phone: string }>)
       } catch (error) {
         console.error('Error loading installers:', error)
       } finally {

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getBlogPosts } from '@/lib/firestore'
+// Fetch from API instead of Firebase/Firestore
 
 export default function RecentBlogPosts() {
   const [posts, setPosts] = useState<Array<{
@@ -24,7 +24,9 @@ export default function RecentBlogPosts() {
   useEffect(() => {
     const loadPosts = async () => {
       try {
-        const postsData = await getBlogPosts()
+        const res = await fetch('/api/blog-posts', { cache: 'no-store' })
+        if (!res.ok) throw new Error('Failed to fetch blog posts')
+        const postsData = await res.json()
         setPosts(postsData.slice(0, 2))
       } catch (error) {
         console.error('Error loading blog posts:', error)

@@ -4,27 +4,31 @@ import Link from 'next/link'
 import { Button } from './ui/Button'
 import { Menu, X, ShoppingCart } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { auth } from '@/lib/firebase'
-import { onAuthStateChanged, signOut, User } from 'firebase/auth'
+// Removed Firebase auth; use local demo admin state
 import Image from 'next/image'
 
 export default function Navbar() {
-  const [user, setUser] = useState<User | null>(null)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
     setIsHydrated(true)
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user)
-    })
-
-    return () => unsubscribe()
+    
+    try {
+      const loggedIn = typeof window !== 'undefined' && localStorage.getItem('adminLoggedIn') === 'true'
+      const email = typeof window !== 'undefined' ? localStorage.getItem('adminEmail') : null
+      setUserEmail(loggedIn ? email : null)
+    } catch {
+      setUserEmail(null)
+    }
   }, [])
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth)
+      localStorage.removeItem('adminLoggedIn')
+      localStorage.removeItem('adminEmail')
+      setUserEmail(null)
     } catch (error) {
       console.error('Error signing out:', error)
     }
@@ -74,9 +78,9 @@ export default function Navbar() {
               <div className="flex items-center space-x-2">
                 <div className="w-20 h-8 bg-gray-200 rounded animate-pulse"></div>
               </div>
-            ) : user ? (
+            ) : userEmail ? (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700">Welcome, {user.email}</span>
+                <span className="text-sm text-gray-700">Welcome, {userEmail}</span>
                 <Link href="/admin">
                   <Button variant="outline" size="sm">Admin</Button>
                 </Link>
@@ -86,7 +90,7 @@ export default function Navbar() {
               </div>
             ) : (
               <Link href="/admin/login">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button variant="primary" size="sm">
                   Login
                 </Button>
               </Link>
@@ -98,13 +102,13 @@ export default function Navbar() {
             {!isHydrated ? (
               // Show loading state during hydration to prevent mismatch
               <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
-            ) : user ? (
+            ) : userEmail ? (
               <Link href="/admin">
                 <Button variant="outline" size="sm">Admin</Button>
               </Link>
             ) : (
               <Link href="/admin/login">
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button variant="primary" size="sm">
                   Login
                 </Button>
               </Link>
@@ -146,10 +150,10 @@ export default function Navbar() {
                     <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
                   </div>
                 </div>
-              ) : user ? (
+              ) : userEmail ? (
                 <div className="pt-4 border-t">
                   <div className="px-3 py-2 text-sm text-gray-500">
-                    Welcome, {user.email}
+                    Welcome, {userEmail}
                   </div>
                   <Link href="/admin" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base">
                     Admin Dashboard

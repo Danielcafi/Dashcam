@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
     loader: 'default',
     unoptimized: false,
   },
-  serverExternalPackages: ['firebase'],
+  serverExternalPackages: [],
   transpilePackages: [],
   outputFileTracingRoot: __dirname,
   
@@ -46,13 +46,6 @@ const nextConfig: NextConfig = {
         cacheGroups: {
           default: false,
           vendors: false,
-          // Firebase bundle
-          firebase: {
-            name: 'firebase',
-            chunks: 'all',
-            test: /[\\/]node_modules[\\/](firebase|@firebase)[\\/]/,
-            priority: 20,
-          },
           // Stripe bundle
           stripe: {
             name: 'stripe',

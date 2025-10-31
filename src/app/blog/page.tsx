@@ -5,8 +5,6 @@ import Image from 'next/image'
 import BlogCard from '@/components/BlogCard'
 import { Button } from '@/components/ui/Button'
 import { Search, Calendar, User } from 'lucide-react'
-import { getBlogPosts } from '@/lib/firestore'
-
 export default function BlogPage() {
   const [blogPosts, setBlogPosts] = useState<Array<{ id: string; title: string; content: string; author: string; date: string; image: string; category: string; slug: string; excerpt: string; createdAt: Date }>>([])
   const [loading, setLoading] = useState(true)
@@ -14,7 +12,9 @@ export default function BlogPage() {
   useEffect(() => {
     const loadBlogPosts = async () => {
       try {
-        const posts = await getBlogPosts()
+        const response = await fetch('/api/blog-posts')
+        if (!response.ok) throw new Error('Failed to fetch blog posts')
+        const posts = await response.json()
         setBlogPosts(posts as unknown as Array<{ id: string; title: string; content: string; author: string; date: string; image: string; category: string; slug: string; excerpt: string; createdAt: Date }>)
       } catch (error) {
         console.error('Error loading blog posts:', error)

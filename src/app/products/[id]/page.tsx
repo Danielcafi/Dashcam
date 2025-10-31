@@ -5,8 +5,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { ShoppingCart, Heart, Share2, Star, Check, Truck, Shield } from 'lucide-react'
-import { getProduct } from '@/lib/firestore'
-
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const [product, setProduct] = useState<{ id: string; name: string; price: number; description: string; images: string[]; features: string[]; specifications: Record<string, string>; brand: string; rating: number; reviewCount: number; stock: number } | null>(null)
   const [loading, setLoading] = useState(true)
@@ -17,7 +15,10 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     const loadProduct = async () => {
       try {
         const resolvedParams = await params
-        const productData = await getProduct(resolvedParams.id)
+        const response = await fetch('/api/products')
+        if (!response.ok) throw new Error('Failed to fetch products')
+        const products = await response.json()
+        const productData = (products as unknown[]).find((p: unknown) => (p as { id: string }).id === resolvedParams.id)
         setProduct(productData as unknown as { id: string; name: string; price: number; description: string; images: string[]; features: string[]; specifications: Record<string, string>; brand: string; rating: number; reviewCount: number; stock: number } | null)
       } catch (error) {
         console.error('Error loading product:', error)

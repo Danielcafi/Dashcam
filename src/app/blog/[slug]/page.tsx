@@ -5,8 +5,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
 import { ArrowLeft, Calendar, User, Clock, Share2, Heart } from 'lucide-react'
-import { getBlogPost, getBlogPosts } from '@/lib/firestore'
-
 export default function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const [blogPost, setBlogPost] = useState<{ title: string; content: string; author: string; date: string; image: string; category: string; slug: string; createdAt?: string; readTime?: string; tags?: string[] } | null>(null)
   const [relatedPosts, setRelatedPosts] = useState<Array<{ id: string; title: string; content: string; author: string; date: string; image: string; category: string; slug: string; excerpt?: string }>>([])
@@ -16,10 +14,14 @@ export default function BlogPostPage({ params }: { params: Promise<{ slug: strin
     const loadBlogPost = async () => {
       try {
         const resolvedParams = await params
-        const [post, allPosts] = await Promise.all([
-          getBlogPost(resolvedParams.slug),
-          getBlogPosts()
+        const [postsResponse] = await Promise.all([
+          fetch('/api/blog-posts')
         ])
+        
+        if (!postsResponse.ok) throw new Error('Failed to fetch blog posts')
+        const allPosts = await postsResponse.json()
+        
+        const post = (allPosts as unknown[]).find((p: unknown) => (p as { slug: string }).slug === resolvedParams.slug)
         
         setBlogPost(post as unknown as { title: string; content: string; author: string; date: string; image: string; category: string; slug: string; createdAt?: string; readTime?: string; tags?: string[] } | null)
         // Get 3 related posts (excluding current one)

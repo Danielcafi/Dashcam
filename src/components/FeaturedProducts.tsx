@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { getProducts } from '@/lib/firestore'
+// Fetch from API instead of Firebase/Firestore
 
 export default function FeaturedProducts() {
   const [products, setProducts] = useState<Array<{
@@ -21,7 +21,9 @@ export default function FeaturedProducts() {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const productsData = await getProducts()
+        const res = await fetch('/api/products', { cache: 'no-store' })
+        if (!res.ok) throw new Error('Failed to fetch products')
+        const productsData = await res.json()
         setProducts(productsData.slice(0, 3))
       } catch (error) {
         console.error('Error loading products:', error)
@@ -31,7 +33,7 @@ export default function FeaturedProducts() {
             id: '1',
             name: 'Premium Dashcam Pro',
             price: 299.99,
-            image: '/cam1.webp',
+            image: '/cam2.webp',
             category: 'dashcam',
             brand: 'Premium',
             rating: 4.8,
@@ -89,7 +91,7 @@ export default function FeaturedProducts() {
         <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
           <div className="relative h-48 overflow-hidden">
             <Image
-              src={product.image || '/cam1.webp'}
+              src={product.image || '/cam2.webp'}
               alt={product.name || 'Dashcam'}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-300"

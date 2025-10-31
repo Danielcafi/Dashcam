@@ -16,22 +16,16 @@ export default function Home() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative text-white overflow-hidden min-h-screen flex items-center">
-        {/* Background Video */}
         <video
           className="absolute inset-0 w-full h-full object-cover"
           autoPlay
           muted
           loop
           playsInline
-          poster="/cam1.webp"
-          preload="metadata"
         >
-          <source src="/hero-new.mp4" type="video/mp4" />
-          {/* Fallback for older browsers */}
+          <source src="/f1e0e56b-9c59-46b6-ad78-fd67648017d4.mp4" type="video/mp4" />
         </video>
-        {/* Overlay */}
         <div className="absolute inset-0 bg-black/50"></div>
-        
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
           <div className="grid grid-cols-1 gap-12 items-center">
             <div>

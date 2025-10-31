@@ -24,11 +24,12 @@ export default function BlogCard({ title, excerpt, image, createdAt, slug }: Blo
       
       <div className="p-6">
         <div className="text-sm text-gray-500 mb-2">
-          {new Date(createdAt).toLocaleDateString('en-GB', {
+          {new Intl.DateTimeFormat('en-GB', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
-          })}
+            day: 'numeric',
+            timeZone: 'UTC',
+          }).format(new Date(createdAt))}
         </div>
         
         <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">

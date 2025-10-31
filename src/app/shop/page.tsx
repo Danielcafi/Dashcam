@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import ProductCard from '@/components/ProductCard'
 import { Button } from '@/components/ui/Button'
 import { Filter, Grid, List } from 'lucide-react'
-import { getProducts } from '@/lib/firestore'
-
 export default function ShopPage() {
   const [products, setProducts] = useState<Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>>([])
   const [filteredProducts, setFilteredProducts] = useState<Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>>([])
@@ -19,7 +17,9 @@ export default function ShopPage() {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const productsData = await getProducts()
+        const response = await fetch('/api/products')
+        if (!response.ok) throw new Error('Failed to fetch products')
+        const productsData = await response.json()
         setProducts(productsData as unknown as Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>)
         setFilteredProducts(productsData as unknown as Array<{ id: string; name: string; price: number; brand: string; category: string; images: string[]; stock: number }>)
       } catch (error) {
