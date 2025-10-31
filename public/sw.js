@@ -1,7 +1,7 @@
 // Service Worker for caching
-const CACHE_NAME = 'dashcams-v2'
-const STATIC_CACHE = 'dashcams-static-v2'
-const DYNAMIC_CACHE = 'dashcams-dynamic-v2'
+const CACHE_NAME = 'dashcams-v3'
+const STATIC_CACHE = 'dashcams-static-v3'
+const DYNAMIC_CACHE = 'dashcams-dynamic-v3'
 
 // Static assets to cache
 const STATIC_ASSETS = [
@@ -62,6 +62,13 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
+  // Skip Next.js chunks and static files (they have hashes and should be fresh)
+  if (url.pathname.startsWith('/_next/static/')) {
+    // Let Next.js handle its own chunks - fetch directly without caching
+    event.respondWith(fetch(request))
+    return
+  }
+
   event.respondWith(
     caches.match(request)
       .then((cachedResponse) => {
@@ -76,14 +83,14 @@ self.addEventListener('fetch', (event) => {
               return response
             }
 
-            // Clone the response
-            const responseToCache = response.clone()
-
-            // Cache dynamic content
-            caches.open(DYNAMIC_CACHE)
-              .then((cache) => {
-                cache.put(request, responseToCache)
-              })
+            // Only cache static assets (images, videos), not JS/CSS chunks
+            if (url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg|mp4|avif|ico)$/i)) {
+              const responseToCache = response.clone()
+              caches.open(DYNAMIC_CACHE)
+                .then((cache) => {
+                  cache.put(request, responseToCache)
+                })
+            }
 
             return response
           })
