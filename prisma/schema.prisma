@@ -62,6 +62,7 @@ enum AppointmentStatus {
   CANCELLED
 }
 
+
 // Product model
 model Product {
   id          String   @id @default(cuid())
@@ -89,4 +90,21 @@ model BlogPost {
   updatedAt DateTime @updatedAt
 
   @@map("blog_posts")
+}
+
+// Customer model (for user accounts)
+model Customer {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  phone        String?
+  isEmailVerified Boolean @default(false)
+  emailVerificationToken String?
+  resetPasswordToken String?
+  resetPasswordExpires DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("customers")
 }

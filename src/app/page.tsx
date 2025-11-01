@@ -210,7 +210,7 @@ export default function Home() {
           
           <div className="text-center mt-12">
             <Link href="/blog">
-              <Button variant="outline" size="lg" className="text-lg px-8 py-4">
+              <Button size="lg" className="text-lg px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 hover:shadow-2xl hover:shadow-blue-500/50 transform hover:scale-105 transition-all duration-300">
                 Read More Articles
               </Button>
             </Link>

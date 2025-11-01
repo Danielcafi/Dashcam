@@ -4,35 +4,59 @@ import Link from 'next/link'
 import { Button } from './ui/Button'
 import { Menu, X, ShoppingCart } from 'lucide-react'
 import { useState, useEffect } from 'react'
-// Removed Firebase auth; use local demo admin state
 import Image from 'next/image'
+import { getCurrentUser, logout as logoutUser, type User } from '@/lib/auth-client'
 
 export default function Navbar() {
-  const [userEmail, setUserEmail] = useState<string | null>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [adminEmail, setAdminEmail] = useState<string | null>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
 
   useEffect(() => {
     setIsHydrated(true)
-    
-    try {
-      const loggedIn = typeof window !== 'undefined' && localStorage.getItem('adminLoggedIn') === 'true'
-      const email = typeof window !== 'undefined' ? localStorage.getItem('adminEmail') : null
-      setUserEmail(loggedIn ? email : null)
-    } catch {
-      setUserEmail(null)
-    }
+    loadAuth()
   }, [])
+
+  const loadAuth = async () => {
+    try {
+      // Check admin login (localStorage)
+      const adminLoggedIn = typeof window !== 'undefined' && localStorage.getItem('adminLoggedIn') === 'true'
+      const email = typeof window !== 'undefined' ? localStorage.getItem('adminEmail') : null
+      setAdminEmail(adminLoggedIn ? email : null)
+
+      // Check customer login (API)
+      const customer = await getCurrentUser()
+      setUser(customer)
+    } catch {
+      setUser(null)
+      setAdminEmail(null)
+    }
+  }
 
   const handleSignOut = async () => {
     try {
-      localStorage.removeItem('adminLoggedIn')
-      localStorage.removeItem('adminEmail')
-      setUserEmail(null)
+      // Sign out customer if logged in
+      if (user) {
+        await logoutUser()
+        setUser(null)
+      }
+      
+      // Sign out admin if logged in
+      if (adminEmail) {
+        localStorage.removeItem('adminLoggedIn')
+        localStorage.removeItem('adminEmail')
+        setAdminEmail(null)
+      }
+      
+      window.location.href = '/'
     } catch (error) {
       console.error('Error signing out:', error)
     }
   }
+
+  const isAuthenticated = user || adminEmail
+  const displayName = user?.name || user?.email || adminEmail
 
   return (
     <nav className="bg-white shadow-lg">
@@ -51,49 +75,88 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-12">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 transition font-bold text-base" prefetch={true}>
+            <Link 
+              href="/" 
+              className="relative text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base pb-1 group" 
+              prefetch={true}
+            >
               Home
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/shop" className="text-gray-700 hover:text-blue-600 transition font-bold text-base" prefetch={true}>
+            <Link 
+              href="/shop" 
+              className="relative text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base pb-1 group" 
+              prefetch={true}
+            >
               Shop
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/installers" className="text-gray-700 hover:text-blue-600 transition font-bold text-base" prefetch={true}>
+            <Link 
+              href="/installers" 
+              className="relative text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base pb-1 group" 
+              prefetch={true}
+            >
               Find Installer
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/blog" className="text-gray-700 hover:text-blue-600 transition font-bold text-base" prefetch={true}>
+            <Link 
+              href="/blog" 
+              className="relative text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base pb-1 group" 
+              prefetch={true}
+            >
               Blog
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-blue-600 transition font-bold text-base" prefetch={true}>
+            <Link 
+              href="/contact" 
+              className="relative text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base pb-1 group" 
+              prefetch={true}
+            >
               Contact
+              <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-full"></span>
             </Link>
           </div>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
-              <ShoppingCart className="h-5 w-5" />
-            </Button>
+            <Link href="/shop">
+              <Button variant="ghost" size="sm" className="text-gray-700 hover:text-blue-600">
+                <ShoppingCart className="h-5 w-5" />
+              </Button>
+            </Link>
             {!isHydrated ? (
               // Show loading state during hydration to prevent mismatch
               <div className="flex items-center space-x-2">
                 <div className="w-20 h-8 bg-gray-200 rounded animate-pulse"></div>
               </div>
-            ) : userEmail ? (
+            ) : isAuthenticated ? (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-700">Welcome, {userEmail}</span>
-                <Link href="/admin">
-                  <Button variant="outline" size="sm">Admin</Button>
+                <span className="text-sm text-gray-700">Welcome, {displayName}</span>
+                <Link href="/account">
+                  <Button variant="outline" size="sm">Account</Button>
                 </Link>
+                {adminEmail && (
+                  <Link href="/admin">
+                    <Button variant="outline" size="sm">Admin</Button>
+                  </Link>
+                )}
                 <Button variant="outline" size="sm" onClick={handleSignOut}>
                   Sign Out
                 </Button>
               </div>
             ) : (
-              <Link href="/admin/login">
-                <Button variant="primary" size="sm">
-                  Login
-                </Button>
-              </Link>
+              <div className="flex items-center space-x-2">
+                <Link href="/login">
+                  <Button variant="primary" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700">
+                    Sign Up
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
 
@@ -102,12 +165,14 @@ export default function Navbar() {
             {!isHydrated ? (
               // Show loading state during hydration to prevent mismatch
               <div className="w-16 h-8 bg-gray-200 rounded animate-pulse"></div>
-            ) : userEmail ? (
-              <Link href="/admin">
-                <Button variant="outline" size="sm">Admin</Button>
-              </Link>
+            ) : isAuthenticated ? (
+              adminEmail && (
+                <Link href="/admin">
+                  <Button variant="outline" size="sm">Admin</Button>
+                </Link>
+              )
             ) : (
-              <Link href="/admin/login">
+              <Link href="/login">
                 <Button variant="primary" size="sm">
                   Login
                 </Button>
@@ -128,20 +193,45 @@ export default function Navbar() {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-3 sm:px-3">
-              <Link href="/" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base" prefetch={true}>
+              <Link 
+                href="/" 
+                className="relative block px-3 py-3 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base group" 
+                prefetch={true}
+              >
                 Home
+                <span className="absolute bottom-2 left-3 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-[calc(100%-1.5rem)]"></span>
               </Link>
-              <Link href="/shop" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base" prefetch={true}>
+              <Link 
+                href="/shop" 
+                className="relative block px-3 py-3 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base group" 
+                prefetch={true}
+              >
                 Shop
+                <span className="absolute bottom-2 left-3 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-[calc(100%-1.5rem)]"></span>
               </Link>
-              <Link href="/installers" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base" prefetch={true}>
+              <Link 
+                href="/installers" 
+                className="relative block px-3 py-3 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base group" 
+                prefetch={true}
+              >
                 Find Installer
+                <span className="absolute bottom-2 left-3 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-[calc(100%-1.5rem)]"></span>
               </Link>
-              <Link href="/blog" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base" prefetch={true}>
+              <Link 
+                href="/blog" 
+                className="relative block px-3 py-3 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base group" 
+                prefetch={true}
+              >
                 Blog
+                <span className="absolute bottom-2 left-3 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-[calc(100%-1.5rem)]"></span>
               </Link>
-              <Link href="/contact" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base" prefetch={true}>
+              <Link 
+                href="/contact" 
+                className="relative block px-3 py-3 text-gray-700 hover:text-blue-600 transition-colors duration-300 font-bold text-base group" 
+                prefetch={true}
+              >
                 Contact
+                <span className="absolute bottom-2 left-3 w-0 h-0.5 bg-blue-600 transition-all duration-300 group-hover:w-[calc(100%-1.5rem)]"></span>
               </Link>
               {!isHydrated ? (
                 // Show loading state during hydration to prevent mismatch
@@ -150,14 +240,16 @@ export default function Navbar() {
                     <div className="w-32 h-4 bg-gray-200 rounded animate-pulse"></div>
                   </div>
                 </div>
-              ) : userEmail ? (
+              ) : isAuthenticated ? (
                 <div className="pt-4 border-t">
                   <div className="px-3 py-2 text-sm text-gray-500">
-                    Welcome, {userEmail}
+                    Welcome, {displayName}
                   </div>
-                  <Link href="/admin" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base">
-                    Admin Dashboard
-                  </Link>
+                  {adminEmail && (
+                    <Link href="/admin" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base">
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <button
                     onClick={handleSignOut}
                     className="block w-full text-left px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base"
@@ -166,9 +258,14 @@ export default function Navbar() {
                   </button>
                 </div>
               ) : (
-                <Link href="/admin/login" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base">
-                  Login
-                </Link>
+                <>
+                  <Link href="/login" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base">
+                    Login
+                  </Link>
+                  <Link href="/register" className="block px-3 py-3 text-gray-700 hover:text-blue-600 font-bold text-base">
+                    Sign Up
+                  </Link>
+                </>
               )}
             </div>
           </div>
